@@ -33,6 +33,7 @@ extern "C" {
 #include "Common/Logger.h"
 #include "Common/String.h"
 #include "Common/System.h"
+#include "Common/Properties.h"
 
 #include "Hyperspace/BerkeleyDbFilesystem.h"
 
@@ -45,6 +46,8 @@ int main(int argc, char **argv) {
   FILE *fp;
   int ret = 0;
   bool isdir;
+  PropertiesPtr props = new Properties();
+  String localhost = "localhost";
 
   System::initialize(System::locate_install_dir(argv[0]));
 
@@ -53,9 +56,10 @@ int main(int argc, char **argv) {
   String filename = format("/tmp/bdb_fs_test%d", (int)getpid());
   FileUtils::mkdirs(filename);
 
-  bdb_fs = new BerkeleyDbFilesystem(filename);
+  bdb_fs = new BerkeleyDbFilesystem(props, localhost, filename);
 
-  DbTxn *txn = bdb_fs->start_transaction();
+  BDbTxn txn;
+  bdb_fs->start_transaction(txn);
 
   try {
     std::vector<String> listing;
@@ -186,13 +190,13 @@ int main(int argc, char **argv) {
 
     fclose(fp);
 
-    txn->commit(0);
+    txn.commit(0);
 
     delete bdb_fs;
 
   }
   catch (Exception &e) {
-    txn->abort();
+    txn.abort();
     if (e.what())
       HT_ERRORF("Caught exception: %s - %s", Error::get_text(e.code()),
                 e.what());

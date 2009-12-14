@@ -58,7 +58,18 @@ namespace Hyperspace {
     Master(ConnectionManagerPtr &, PropertiesPtr &,
            ServerKeepaliveHandlerPtr &, ApplicationQueuePtr &app_queue_ptr);
     ~Master();
-
+    bool is_master() {
+      if (m_bdb_fs)
+        return m_bdb_fs->is_master();
+      else
+        return false;
+    }
+    String get_current_master() {
+      if (m_bdb_fs)
+        return m_bdb_fs->get_current_master();
+      else
+        return (String) "";
+    };
     // Hyperspace command implementations
     void mkdir(ResponseCallback *cb, uint64_t session_id, const char *name);
     void unlink(ResponseCallback *cb, uint64_t session_id, const char *name);
@@ -141,10 +152,10 @@ namespace Hyperspace {
     void normalize_name(std::string name, std::string &normal);
     void deliver_event_notifications(HyperspaceEventPtr &event_ptr,
         NotificationMap &handles_to_sessions, bool wait_for_notify = true);
-    void persist_event_notifications(DbTxn *txn, uint64_t event_id,
+    void persist_event_notifications(BDbTxn &txn, uint64_t event_id,
                                      NotificationMap &handles_to_sessions);
-    void persist_event_notifications(DbTxn *txn, uint64_t event_id, uint64_t handle);
-    bool validate_and_create_node_data(DbTxn *txn, const String &node);
+    void persist_event_notifications(BDbTxn &txn, uint64_t event_id, uint64_t handle);
+    bool validate_and_create_node_data(BDbTxn &txn, const String &node);
     /**
      * Locates the parent 'node' of the given pathname.  It determines the name
      * of the parent node by stripping off the characters incuding and after
@@ -165,13 +176,13 @@ namespace Hyperspace {
                           std::string &parent_name, std::string &child_name);
     bool destroy_handle(uint64_t handle, int *errorp, std::string &errmsg,
                         bool wait_for_notify=true);
-    void release_lock(DbTxn *txn, uint64_t handle, const String &node,
+    void release_lock(BDbTxn &txn, uint64_t handle, const String &node,
         HyperspaceEventPtr &release_event, NotificationMap &release_notifications);
-    void lock_handle(DbTxn *txn, uint64_t handle, uint32_t mode, String &node);
-    void lock_handle(DbTxn *txn, uint64_t handle, uint32_t mode, const String &node);
+    void lock_handle(BDbTxn &txn, uint64_t handle, uint32_t mode, String &node);
+    void lock_handle(BDbTxn &txn, uint64_t handle, uint32_t mode, const String &node);
     void lock_handle_with_notification(uint64_t handle, uint32_t mode,
                                        bool wait_for_notify=true);
-    void grant_pending_lock_reqs(DbTxn *txn, const String &node,
+    void grant_pending_lock_reqs(BDbTxn &txn, const String &node,
         HyperspaceEventPtr &lock_granted_event, NotificationMap &lock_granted_notifications,
         HyperspaceEventPtr &lock_acquired_event, NotificationMap &lock_acquired_notifications);
     void recover_state();
