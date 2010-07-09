@@ -1,0 +1,6 @@
+:development:
+        :data: '/tmp/monitoring/'
+
+
+:production:
+        :data: '/tmp/monitoring/'
