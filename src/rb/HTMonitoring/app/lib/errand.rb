@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+#this code is taken from
+# http://github.com/auxesis/rubyrrdtool
+# added resolution param (defun)
 # Attempt to load the native RRD library provided by the operating system.
 begin
   # Ruby Enterprise Edition will try to load everything from /usr/local/lib/ruby.

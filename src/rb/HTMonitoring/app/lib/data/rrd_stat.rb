@@ -183,7 +183,7 @@ class RRDStat
 
   def cal_rs_totals(datas)
     datas.each do |data|
-      puts data[:start],data[:finish],data[:resolution]
+      #puts data[:start],data[:finish],data[:resolution]
       fetch = data[:rrd].fetch(:function => "AVERAGE",
                                :start => data[:start],
                                :finish => data[:finish],

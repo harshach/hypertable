@@ -1,5 +1,7 @@
 # this calss is responsible for reading from rs_stats.txt
-# we won't be using this class
+# Its used for displaying summary
+# @@stats_config should go into yml file
+
 class RangeServerStats
 
   @@stats_config = {
